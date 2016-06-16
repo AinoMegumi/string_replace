@@ -31,7 +31,7 @@ auto replace_regex(std::basic_string<CharType>& base, const Container& replace_l
 -> decltype(
 	std::declval<Container>()[std::declval<std::size_t>()], //concept:[]演算子が使える
 	std::size(std::declval<Container>()),//concept:sizeメンバー関数があるかC-style配列型
-	void/戻り値の型
+	void//戻り値の型
 )
 {
 	if (0 == std::size(replace_list) || 10 < std::size(replace_list)) return base;//処理しない
