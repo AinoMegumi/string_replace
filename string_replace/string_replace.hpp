@@ -23,6 +23,8 @@ namespace type_traits {
 		template<typename Container>
 		constexpr auto has_operator_subscript_impl(...)->std::false_type { return{}; }
 	}
+	//!\~english	@brief meta tmeplate to check the type has member function 'operator[]'
+	//!\~japanese	@brief 'operatpr[]'メンバー関数をもつか調べるメタtemplate
 	template<typename Container>
 	struct has_operator_subscript : public decltype(detail::has_operator_subscript_impl<Container>(std::declval<Container>())){};
 	namespace detail {
@@ -31,11 +33,22 @@ namespace type_traits {
 		template<typename Container>
 		constexpr auto has_member_function_size_impl(...)->std::false_type { return{}; }
 	}
+	//!\~english	@brief meta tmeplate to check the type has member function 'size()'
+	//!\~japanese	@brief 'size()'メンバー関数をもつか調べるメタtemplate
 	template<typename Container>
 	struct has_member_function_size : public decltype(detail::has_member_function_size_impl<Container>(std::declval<Container>())){};
 }
 
+//!\~english	@brief replace $0-$9 in 1st argument to 2nd argument's element.
+//!\~japanese	@brief 第一引数中の$0～$9を第二引数の配列の要素で置換する
+//!\~english	@param base[in, out] target string
+//!\~japanese	@param base[in, out] 対象文字列
+//!\~english	@param replace_list[in] replace string list(element type must be std::basic_string)
+//!\~japanese	@param replace_list[in] 置換文字列群(要素型はstd::basic_stringである必要があります)
 template<typename CharType, typename Container, std::enable_if_t<
+	//Require concept for 'Container':
+	//  1. operator[]がつかえる(operator[]をメンバーに持つか(フリー関数としては定義できない)ポインタに暗黙変換可能(=C形式の配列))
+	//  2. std::size()(C++17 or later)が呼べる(=C形式の配列であるかsize()をメンバー関数に持つ)
 	std::is_array<Container>::value || (type_traits::has_operator_subscript<Container>::value && type_traits::has_member_function_size<Container>::value),
 	std::nullptr_t
 > = nullptr>
@@ -51,7 +64,7 @@ void replace_regex(std::basic_string<CharType>& base, const Container& replace_l
 		const int target_id = base[pos + 1] - detail::zero<CharType>();//文字コードで0から9が連続することは保証されている
 		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std::size(replace_list) && !replace_list[target_id].empty()) {
 			base.replace(pos, 2, replace_list[target_id]);
-			next_diff = replace_list[target_id].length();
+			next_diff = replace_list[target_id].length();//文字列の長さ分skipする
 		}
 	}
 }
