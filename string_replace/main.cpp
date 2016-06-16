@@ -4,13 +4,6 @@
 #include <type_traits>
 #include <cuchar>
 #include <array>
-std::wstring get_string() {
-	std::wstring buf;
-	std::wifstream ifs("test.txt");
-	std::getline(ifs, buf);
-	return buf;
-}
-
 namespace detail {
 	template<typename CharType>	constexpr CharType zero();
 	template<> constexpr char zero<char>() { return '0'; }
@@ -51,15 +44,16 @@ template<typename CharType, typename Container, std::enable_if_t<
 void replace_regex(std::basic_string<CharType>& base, const Container& replace_list)
 {
 	if (0 == std::size(replace_list) || 10 < std::size(replace_list)) return;//処理しない
-	size_t current = 0;
 	for (
-		size_t found; 
-		(found = base.find_first_of(detail::delim<CharType>(), current)) != std::basic_string<CharType>::npos && found + 1 < base.size();
-		current = found + 1
+		size_t pos = 0, next_diff = 1; 
+		std::basic_string<CharType>::npos != (pos = base.find_first_of(detail::delim<CharType>(), pos)) && pos + 1 < base.size();
+		pos = pos + next_diff
 	) {
-		const int target_id = base[found + 1] - detail::zero<CharType>();
+		next_diff = 1;
+		const int target_id = base[pos + 1] - detail::zero<CharType>();
 		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std::size(replace_list) && !replace_list[target_id].empty()) {
-			base.replace(found, 2, replace_list[target_id]);
+			base.replace(pos, 2, replace_list[target_id]);
+			next_diff = replace_list[target_id].length();
 		}
 	}
 }
@@ -67,8 +61,8 @@ int main()
 {
 	using namespace std::literals;
 	std::string s = "arikitari na $1 string. $2";
-	std::cout << s << std::endl;
+	std::cout << s << std::endl;//arikitari na $1 string. $2
 	std::array<std::string, 2> list = { { std::string(), "aru"s } };
 	replace_regex(s, list);
-	std::cout << s << std::endl;
+	std::cout << s << std::endl;//"arikitari na aru string. $2"
 }
