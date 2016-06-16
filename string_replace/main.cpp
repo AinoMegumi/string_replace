@@ -25,6 +25,9 @@ detail::test_info<CharType, Container> test(std::basic_string<CharType> str, Con
 int main()
 {
 	using namespace std::literals;
+	std::wcout.imbue(std::locale(""));
 	std::cout << test("arikitari na $1 string. $2"s, std::array<std::string, 2>{ { std::string(), "aru"s } }) << std::endl;
 	std::wcout << test(L"arikitari na $1 string. $2"s, std::array<std::wstring, 2>{ { std::wstring(), L"aru"s } }) << std::endl;
+	std::wcout << test(L"$1機能"s, std::array<std::wstring, 2>{ { std::wstring(), L"岡山の陶芸家を用なしにする"s } }) << std::endl;
+	std::wcout << test(L"$1機能"s, std::array<std::wstring, 2>{ { std::wstring(), L"でちまるさんの兄にとどめを刺す"s } }) << std::endl;
 }
