@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <fstream>
 #include <string>
 #include <type_traits>
@@ -29,12 +29,12 @@ namespace detail {
 template<typename CharType, typename Container>
 auto replace_regex(std::basic_string<CharType>& base, const Container& replace_list)
 -> decltype(
-	std::declval<Container>()[std::declval<std::size_t>()], //concept:[]‰‰Zq‚ªg‚¦‚é
-	std::size(std::declval<Container>()),//concept:sizeƒƒ“ƒo[ŠÖ”‚ª‚ ‚é‚©C-style”z—ñŒ^
-	void//–ß‚è’l‚ÌŒ^
+	std::declval<Container>()[std::declval<std::size_t>()], //concept:[]æ¼”ç®—å­ãŒä½¿ãˆã‚‹
+	std::size(std::declval<Container>()),//concept:sizeãƒ¡ãƒ³ãƒãƒ¼é–¢æ•°ãŒã‚ã‚‹ã‹C-styleé…åˆ—å‹
+	void//æˆ»ã‚Šå€¤ã®å‹
 )
 {
-	if (0 == std::size(replace_list) || 10 < std::size(replace_list)) return base;//ˆ—‚µ‚È‚¢
+	if (0 == std::size(replace_list) || 10 < std::size(replace_list)) return base;//å‡¦ç†ã—ãªã„
 	size_t current = 0;
 	for (
 		size_t found; 
