@@ -50,19 +50,37 @@ void replace_regex(std::basic_string<CharType>& base, const Container& replace_l
 		pos = pos + next_diff
 	) {
 		next_diff = 1;
-		const int target_id = base[pos + 1] - detail::zero<CharType>();
+		const int target_id = base[pos + 1] - detail::zero<CharType>();//文字コードで0から9が連続することは保証されている
 		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std::size(replace_list) && !replace_list[target_id].empty()) {
 			base.replace(pos, 2, replace_list[target_id]);
 			next_diff = replace_list[target_id].length();
 		}
 	}
 }
+namespace detail {
+	template<typename CharType, typename Container>
+	struct test_info {
+		std::basic_string<CharType> str;
+		Container&& list;
+		test_info() = default;
+		test_info(const test_info&) = delete;
+		test_info(test_info&&) = delete;
+		test_info& operator=(const test_info&) = delete;
+		test_info& operator=(test_info&&) = delete;
+	};
+	template<typename CharType, typename Container>
+	std::basic_ostream<CharType>& operator<< (std::basic_ostream<CharType>& os, test_info<CharType, Container>&& info) {
+		os << info.str << std::endl;
+		replace_regex(info.str, info.list);
+		os << info.str << std::endl;
+		return os;
+	}
+}
+template<typename CharType, typename Container>
+detail::test_info<CharType, Container> test(std::basic_string<CharType> str, Container&& c) { return{ std::move(str), std::forward<Container>(c) }; }
 int main()
 {
 	using namespace std::literals;
-	std::string s = "arikitari na $1 string. $2";
-	std::cout << s << std::endl;//arikitari na $1 string. $2
-	std::array<std::string, 2> list = { { std::string(), "aru"s } };
-	replace_regex(s, list);
-	std::cout << s << std::endl;//"arikitari na aru string. $2"
+	std::cout << test("arikitari na $1 string. $2"s, std::array<std::string, 2>{ { std::string(), "aru"s } }) << std::endl;
+	std::wcout << test(L"arikitari na $1 string. $2"s, std::array<std::wstring, 2>{ { std::wstring(), L"aru"s } }) << std::endl;
 }
