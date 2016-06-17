@@ -96,7 +96,7 @@ template<typename CharType, typename Container, std::enable_if_t<
 	std::is_array<Container>::value || (type_traits::has_operator_subscript<Container>::value && type_traits::has_member_function_size<Container>::value),
 	std::nullptr_t
 > = nullptr>
-void replace_regex(std::basic_string<CharType>& base, const Container& replace_list)
+void replace_regex_variable(std::basic_string<CharType>& base, const Container& replace_list)
 {
 	if (0 == std_future::size(replace_list) || 10 < std_future::size(replace_list)) return;//処理しない
 	for (

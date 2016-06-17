@@ -46,7 +46,7 @@ namespace detail {
 	std::basic_ostream<CharType>& operator<< (std::basic_ostream<CharType>& os, test_info<CharType, Container>&& info) {
 		using std::endl;
 		os << info.str << endl;
-		replace_regex(info.str, info.list);
+		replace_regex_variable(info.str, info.list);
 		os << info.str << endl;
 		return os;
 	}
@@ -97,7 +97,7 @@ namespace detail {
 	std::ostream& operator<< (std::ostream& os, test_info<CharType, Container>&& info) {
 		using std::endl;
 		os << to_narrow_multibyte(info.str) << endl;
-		replace_regex(info.str, info.list);
+		replace_regex_variable(info.str, info.list);
 		os << to_narrow_multibyte(info.str) << endl;
 		return os;
 	}
