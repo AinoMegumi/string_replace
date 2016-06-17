@@ -114,7 +114,8 @@ int main(int argc, char* argv[])
 		cout << test("arikitari na $1 string. $2"s, std::array<std::string, 2>{ { std::string(), "aru"s } }) << endl;
 		cout << test(L"arikitari na $1 string. $2"s, std::array<std::wstring, 2>{ { std::wstring(), L"aru"s } }) << endl;
 		cout << test(L"$1機能"s, std::array<std::wstring, 2>{ { std::wstring(), L"岡山の陶芸家を用なしにする"s } }) << endl;
-		cout << test(L"$1機能"s, std::array<std::wstring, 2>{ { std::wstring(), L"でちまるさんの兄にとどめを刺す"s } }) << endl;
+		const wchar_t* list[] = { L"", L"でちまるさんの兄にとどめを刺す" };
+		cout << test(L"$1機能"s, list) << endl;
 		if (2 != argc) return 0;
 		std::wstring buf;
 		std::wifstream in(argv[1]);
