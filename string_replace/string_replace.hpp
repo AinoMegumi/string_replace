@@ -1,7 +1,10 @@
 ﻿#pragma once
 #include <string>
 #include <type_traits>
+#include <iterator>
+#ifndef __MINGW32__
 #include <cuchar>
+#endif
 namespace detail {
 	template<typename CharType>	constexpr CharType zero();
 	template<> constexpr char zero<char>() { return '0'; }
@@ -13,6 +16,16 @@ namespace detail {
 	template<> constexpr wchar_t delim<wchar_t>() { return L'$'; }
 	template<> constexpr char16_t delim<char16_t>() { return u'$'; }
 	template<> constexpr char32_t delim<char32_t>() { return U'$'; }
+	template <class C>
+	constexpr auto size(const C& c) -> decltype(c.size())
+	{
+		return c.size();
+	}
+	template <class T, std::size_t N>
+	constexpr std::size_t size(const T(&)[N]) noexcept
+	{
+		return N;
+	}
 }
 namespace type_traits {
 	//C++メタ関数のまとめ - Qiita
@@ -54,7 +67,7 @@ template<typename CharType, typename Container, std::enable_if_t<
 > = nullptr>
 void replace_regex(std::basic_string<CharType>& base, const Container& replace_list)
 {
-	if (0 == std::size(replace_list) || 10 < std::size(replace_list)) return;//処理しない
+	if (0 == detail::size(replace_list) || 10 < detail::size(replace_list)) return;//処理しない
 	for (
 		size_t pos = 0, next_diff = 1;
 		std::basic_string<CharType>::npos != (pos = base.find_first_of(detail::delim<CharType>(), pos)) && pos + 1 < base.size();
@@ -62,7 +75,7 @@ void replace_regex(std::basic_string<CharType>& base, const Container& replace_l
 		) {
 		next_diff = 1;
 		const int target_id = base[pos + 1] - detail::zero<CharType>();//文字コードで0から9が連続することは保証されている
-		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std::size(replace_list) && !replace_list[target_id].empty()) {
+		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < detail::size(replace_list) && !replace_list[target_id].empty()) {
 			base.replace(pos, 2, replace_list[target_id]);
 			next_diff = replace_list[target_id].length();//文字列の長さ分skipする
 		}

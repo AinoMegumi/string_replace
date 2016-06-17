@@ -3,7 +3,6 @@
 
 # User-specific files
 *.suo
-*.user
 *.sln.docstates
 
 # Build results
@@ -194,6 +193,7 @@ ModelManifest.xml
 
 #other
 *.exe
+*.out
 Release/*.exe
 Debug/*.exe
 RdRand.exe
