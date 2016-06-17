@@ -1,4 +1,4 @@
-﻿# Makefile for string_replace.out
+# Makefile for string_replace.out
 
 TARGET 	= string_replace.out
 SRCS 	= ./string_replace/main.cpp
