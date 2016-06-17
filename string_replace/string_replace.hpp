@@ -81,13 +81,9 @@ namespace type_traits {
 		template<typename T, bool is_stl_string = is_stl_string<T>::value, bool is_c_str = is_c_str<T>::value>
 		struct get_char_type_impl;
 		template<typename T>
-		struct get_char_type_impl<T, true, false> {
-			using type = typename T::value_type;
-		};
+		struct get_char_type_impl<T, true, false> { using type = typename T::value_type; };
 		template<typename T>
-		struct get_char_type_impl<T, false, true> {
-			using type = std::remove_cv_t<std::remove_pointer_t<T>>;
-		};
+		struct get_char_type_impl<T, false, true> { using type = std::remove_cv_t<std::remove_pointer_t<T>>; };
 	}
 	template<typename T>
 	struct get_char_type : detail::get_char_type_impl<T> {};
