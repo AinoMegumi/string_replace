@@ -198,3 +198,4 @@ Release/*.exe
 Debug/*.exe
 RdRand.exe
 x64
+*.tlog

@@ -56,8 +56,7 @@ namespace detail {
 		const int len = ::WideCharToMultiByte(CP_ACP, 0, str.c_str(), -1, nullptr, 0, nullptr, nullptr);
 		std::string re(len * 2, '\0');
 		if (!::WideCharToMultiByte(CP_ACP, 0, str.c_str(), -1, &re[0], len, nullptr, nullptr)) {
-			const auto ec = ::GetLastError();
-			switch (ec)
+			switch (const auto ec = ::GetLastError())
 			{
 				case ERROR_INSUFFICIENT_BUFFER:
 					throw std::runtime_error("in function utf_16_to_shift_jis, WideCharToMultiByte fail. cause: ERROR_INSUFFICIENT_BUFFER"); break;
@@ -105,6 +104,8 @@ namespace detail {
 }
 template<typename CharType, typename Container>
 detail::test_info<CharType, Container> test(std::basic_string<CharType> str, Container&& c) { return{ std::move(str), std::forward<Container>(c) }; }
+template<typename CharType, typename ElemType>
+detail::test_info<CharType, std::initializer_list<ElemType>> test(std::basic_string<CharType> str, std::initializer_list<ElemType>&& c) { return{ std::move(str), std::move(c) }; }
 int main(int argc, char* argv[])
 {
 	using namespace std::literals;
@@ -112,7 +113,8 @@ int main(int argc, char* argv[])
 	using std::endl;
 	try {
 		cout << test("arikitari na $1 string. $2"s, std::array<std::string, 2>{ { std::string(), "aru"s } }) << endl;
-		cout << test(L"arikitari na $1 string. $2"s, std::array<std::wstring, 2>{ { std::wstring(), L"aru"s } }) << endl;
+		cout << test(L"arikitari na $1 string. $2"s, { std::wstring(), L"aru"s }) << endl;
+		cout << test(L"arikitari na $1 string. $2"s, { L"", L"aru" }) << endl;
 		cout << test(L"$1機能"s, std::array<std::wstring, 2>{ { std::wstring(), L"岡山の陶芸家を用なしにする"s } }) << endl;
 		const wchar_t* list[] = { L"", L"でちまるさんの兄にとどめを刺す" };
 		cout << test(L"$1機能"s, list) << endl;

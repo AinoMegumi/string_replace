@@ -81,6 +81,19 @@ namespace detail {
 	std::size_t length(const StlString& s) noexcept { return s.length(); }
 	template<typename CharType, std::enable_if_t<type_traits::is_char_type<CharType>::value, std::nullptr_t> = nullptr>
 	std::size_t length(const CharType* s) noexcept { return std::char_traits<CharType>::length(s); }
+	template<typename Container, std::enable_if_t<type_traits::has_operator_subscript<Container>::value, std::nullptr_t> = nullptr>
+	auto at(const Container& c, std::size_t n) -> std::add_lvalue_reference_t<decltype(c.operator[](std::declval<std::size_t>()))>{
+		return c[n];
+	}
+	template<typename Container, std::enable_if_t<std::is_array<Container>::value, std::nullptr_t> = nullptr>
+	auto at(const Container& c, std::size_t n) ->std::add_lvalue_reference_t<decltype(c[std::declval<std::size_t>()])> {
+		return c[n];
+	}
+
+	template<typename Container, std::enable_if_t<!std::is_array<Container>::value && !type_traits::has_operator_subscript<Container>::value, std::nullptr_t> = nullptr>
+	const typename Container::value_type& at(const Container& c, std::size_t n) {
+		return *std::next(std::begin(c), n);
+	}
 }
 
 //!\~english	@brief replace $0-$9 in 1st argument to 2nd argument's element.
@@ -93,7 +106,7 @@ template<typename CharType, typename Container, std::enable_if_t<
 	//Require concept for 'Container':
 	//  1. operator[]がつかえる(operator[]をメンバーに持つか(フリー関数としては定義できない)ポインタに暗黙変換可能(=C形式の配列))
 	//  2. std::size()(C++17 or later)が呼べる(=C形式の配列であるかsize()をメンバー関数に持つ)
-	std::is_array<Container>::value || (type_traits::has_operator_subscript<Container>::value && type_traits::has_member_function_size<Container>::value),
+	std::is_array<Container>::value || type_traits::has_member_function_size<Container>::value,
 	std::nullptr_t
 > = nullptr>
 void replace_regex_variable(std::basic_string<CharType>& base, const Container& replace_list)
@@ -106,9 +119,13 @@ void replace_regex_variable(std::basic_string<CharType>& base, const Container& 
 	) {
 		next_diff = 1;
 		const int target_id = base[pos + 1] - detail::zero<CharType>();//文字コードで0から9が連続することは保証されている
-		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std_future::size(replace_list) && !detail::empty(replace_list[target_id])) {
-			base.replace(pos, 2, replace_list[target_id]);
-			next_diff = detail::length(replace_list[target_id]);//文字列の長さ分skipする
+		if (0 < target_id && target_id < 10 && static_cast<std::size_t>(target_id) < std_future::size(replace_list) && !detail::empty(detail::at(replace_list, target_id))) {
+			base.replace(pos, 2, detail::at(replace_list, target_id));
+			next_diff = detail::length(detail::at(replace_list, target_id));//文字列の長さ分skipする
 		}
 	}
+}
+template<typename CharType, typename ElemType>
+void replace_regex_variable(std::basic_string<CharType>& base, std::initializer_list<ElemType>&& replace_list) {
+	replace_regex_variable(base, replace_list);
 }
