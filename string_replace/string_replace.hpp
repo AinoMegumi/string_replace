@@ -2,9 +2,6 @@
 #include <string>
 #include <type_traits>
 #include <iterator>
-#ifndef __MINGW32__
-#include <cuchar>
-#endif
 namespace detail {
 	template<typename CharType>	constexpr CharType zero();
 	template<> constexpr char zero<char>() { return '0'; }
