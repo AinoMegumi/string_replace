@@ -35,6 +35,17 @@ namespace type_traits {
 	//!\~japanese	@brief 'size()'メンバー関数をもつか調べるメタtemplate
 	template<typename Container>
 	struct has_member_function_size : public decltype(detail::has_member_function_size_impl<Container>(std::declval<Container>())){};
+	namespace detail {
+		template<typename T>
+		constexpr std::true_type has_value_type_impl(typename T::value_type*) { return{}; }
+		template<typename T>
+		constexpr std::false_type has_value_type_impl(...) { return{}; }
+	}
+	//!\~english	@brief meta tmeplate to check the type has typedef 'value_type'
+	//!\~japanese	@brief 'value_type'がメンバーに定義されているか調べるメタtemplate
+	template<typename T>
+	struct has_value_type : public decltype(detail::has_value_type_impl<T>(nullptr)){};
+
 	//
 	// is_char_type
 	//
@@ -104,9 +115,8 @@ namespace detail {
 //!\~japanese	@param replace_list[in] 置換文字列群(要素型はstd::basic_stringである必要があります)
 template<typename CharType, typename Container, std::enable_if_t<
 	//Require concept for 'Container':
-	//  1. operator[]がつかえる(operator[]をメンバーに持つか(フリー関数としては定義できない)ポインタに暗黙変換可能(=C形式の配列))
-	//  2. std::size()(C++17 or later)が呼べる(=C形式の配列であるかsize()をメンバー関数に持つ)
-	std::is_array<Container>::value || type_traits::has_member_function_size<Container>::value,
+	// 1. C形式の配列であるかsize()とvalue_typeをメンバーに持つ
+	std::is_array<Container>::value || (type_traits::has_member_function_size<Container>::value && type_traits::has_value_type<Container>::value),
 	std::nullptr_t
 > = nullptr>
 void replace_regex_variable(std::basic_string<CharType>& base, const Container& replace_list)
