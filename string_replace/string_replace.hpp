@@ -121,8 +121,8 @@ namespace detail {
 //!\~japanese	@brief 第一引数中の$0～$9を第二引数の配列の要素で置換する
 //!\~english	@param base[in, out] target string
 //!\~japanese	@param base[in, out] 対象文字列
-//!\~english	@param replace_list[in] replace string list(element type must be std::basic_string)
-//!\~japanese	@param replace_list[in] 置換文字列群(要素型はstd::basic_stringである必要があります)
+//!\~english	@param replace_list[in] replace string list(element type must be std::basic_string or c-style string)
+//!\~japanese	@param replace_list[in] 置換文字列群(要素型はstd::basic_stringかC形式の文字列である必要があります)
 template<typename CharType, typename Container, std::enable_if_t<
 	//Require concept for 'Container':
 	// 1. C形式の配列であるかsize()とvalue_typeをメンバーに持つ
